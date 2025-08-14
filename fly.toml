@@ -1,0 +1,6 @@
+app = "flyio-disk-performance-test"
+primary_region = "iad"
+
+[vm]
+size = "performance-2x"
+count = 1
