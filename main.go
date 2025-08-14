@@ -12,9 +12,9 @@ func main() {
 	os.RemoveAll("/tmp/test-2.db")
 	os.RemoveAll("/tmp/test-3.db")
 
-	measureTime("cp", "./companies.db", "/tmp/test-1.db", copyFile)
+	measureTime("symlink", "./companies.db", "/tmp/test-1.db", symLinkFile)
 	measureTime("hardlink", "./companies.db", "/tmp/test-2.db", hardLinkFile)
-	measureTime("symlink", "./companies.db", "/tmp/test-3.db", symLinkFile)
+	measureTime("cp", "./companies.db", "/tmp/test-3.db", copyFile)
 }
 
 func measureTime(operation, src, dst string, fn func(string, string) error) {
