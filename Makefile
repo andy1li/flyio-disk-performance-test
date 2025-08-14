@@ -15,15 +15,9 @@ deploy:
 	@echo "🚀 Deploying to Fly.io..."
 	fly deploy
 
-# View logs from the deployed application
 logs:
-	@echo "📋 Viewing logs from Fly.io..."
-	fly logs
-
-# Follow logs in real-time
-logs-follow:
 	@echo "📋 Following logs from Fly.io..."
-	fly logs --follow
+	fly logs
 
 # Run the application locally
 run-local:
