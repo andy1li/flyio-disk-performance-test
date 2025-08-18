@@ -1,10 +1,11 @@
-FROM golang:1.21-alpine
+FROM golang:1.23-alpine
 
 WORKDIR /app
 
 # Copy source code and database
 COPY companies.db /app/companies.db
 COPY go.mod /app/go.mod
+COPY go.sum /app/go.sum
 COPY main.go /app/main.go
 
 # Build the application inside the container

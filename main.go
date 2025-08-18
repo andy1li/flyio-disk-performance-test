@@ -1,10 +1,14 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
+
+	_ "modernc.org/sqlite"
 )
 
 func main() {
@@ -15,6 +19,7 @@ func main() {
 	measureTime("symlink", "./companies.db", "/tmp/test-1.db", symLinkFile)
 	measureTime("hardlink", "./companies.db", "/tmp/test-2.db", hardLinkFile)
 	measureTime("cp", "./companies.db", "/tmp/test-3.db", copyFile)
+	measureTime("db.Query", "./companies.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
 }
 
 func measureTime(operation, src, dst string, fn func(string, string) error) {
@@ -39,4 +44,36 @@ func hardLinkFile(src, dst string) error {
 
 func symLinkFile(src, dst string) error {
 	return os.Symlink(src, dst)
+}
+
+func dbQuery(src, query string) error {
+	db, err := sql.Open("sqlite", src)
+	if err != nil {
+		fmt.Printf("Failed to create test database, this is a CodeCrafters error.")
+		return err
+	}
+	defer db.Close()
+
+	expectedValues := []string{}
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var value1 string
+		var value2 string
+
+		if err := rows.Scan(&value1, &value2); err != nil {
+			return err
+		}
+
+		expectedValues = append(expectedValues, strings.Join([]string{value1, value2}, "|"))
+	}
+
+	fmt.Println(expectedValues)
+
+	return nil
 }

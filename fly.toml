@@ -1,4 +1,4 @@
-app = "flyio-disk-performance-test"
+app = "flyio-disk-performance-test-andy"
 primary_region = "iad"
 
 [vm]
