@@ -16,10 +16,12 @@ func main() {
 	os.RemoveAll("/app/test-2.db")
 	os.RemoveAll("/app/test-3.db")
 
-	fmt.Println("⛳ start")
+	fmt.Println("⛳ pwd")
+	output, _ := exec.Command("pwd").Output()
+	fmt.Print(string(output))
 
 	fmt.Println("⛳ head /var/opt/tester/companies.db")
-	output, _ := exec.Command("head", "/var/opt/tester/companies.db").Output()
+	output, _ = exec.Command("head", "/var/opt/tester/companies.db").Output()
 	fmt.Print(string(output))
 
 	measureTime("symlink", "/var/opt/tester/companies.db", "/app/test-1.db", symLinkFile)

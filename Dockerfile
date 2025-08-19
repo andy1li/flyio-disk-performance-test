@@ -1,21 +1,13 @@
 FROM golang:1.23-alpine
 
-WORKDIR /app
+RUN apk add --no-cache git git-lfs
 
-# Copy source code and database
-RUN mkdir -p /var/opt/tester
-COPY companies.db /var/opt/tester
-COPY go.mod /app/go.mod
-COPY go.sum /app/go.sum
-COPY main.go /app/main.go
-
+WORKDIR /var/opt/tester
+COPY . /var/opt/tester
 RUN git lfs pull
 
-# Build the application inside the container
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
-
-# Make the binary executable
 RUN chmod +x main
 
-# Run the application
-CMD ["./main"]
+WORKDIR /app
+CMD ["/var/opt/tester/main"]
