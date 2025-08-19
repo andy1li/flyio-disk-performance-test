@@ -13,7 +13,7 @@ help:
 # Deploy to Fly.io
 deploy:
 	@echo "🚀 Deploying to Fly.io..."
-	fly deploy
+	fly deploy --depot=false
 
 logs:
 	@echo "📋 Following logs from Fly.io..."

@@ -1,6 +1,14 @@
-app = "flyio-disk-performance-test-andy"
-primary_region = "iad"
+# fly.toml app configuration file generated for flyio-disk-performance-test-andy on 2025-08-20T01:50:20+08:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
 
-[vm]
-size = "performance-2x"
-count = 1
+app = 'flyio-disk-performance-test-andy'
+primary_region = 'iad'
+
+[build]
+
+[[vm]]
+  size = 'performance-2x'
+  count = 1
+

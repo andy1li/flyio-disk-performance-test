@@ -3,7 +3,8 @@ FROM golang:1.23-alpine
 WORKDIR /app
 
 # Copy source code and database
-COPY companies.db /app/companies.db
+RUN mkdir -p /var/opt/tester
+COPY companies.db /var/opt/tester
 COPY go.mod /app/go.mod
 COPY go.sum /app/go.sum
 COPY main.go /app/main.go
