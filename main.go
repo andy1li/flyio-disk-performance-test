@@ -18,9 +18,8 @@ func main() {
 
 	fmt.Println("⛳ start")
 
-	catCmd := "cat /var/opt/tester/companies.db"
-	fmt.Println(catCmd)
-	output, _ := exec.Command(catCmd).Output()
+	fmt.Println("⛳ cat /var/opt/tester/companies.db")
+	output, _ := exec.Command("cat", "/var/opt/tester/companies.db").Output()
 	fmt.Print(string(output))
 
 	measureTime("symlink", "/var/opt/tester/companies.db", "/app/test-1.db", symLinkFile)
