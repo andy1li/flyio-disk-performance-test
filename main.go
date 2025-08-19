@@ -16,10 +16,14 @@ func main() {
 	os.RemoveAll("/app/test-2.db")
 	os.RemoveAll("/app/test-3.db")
 
+	fmt.Println("⛳ start")
+
 	measureTime("symlink", "/var/opt/tester/companies.db", "/app/test-1.db", symLinkFile)
 	measureTime("hardlink", "/var/opt/tester/companies.db", "/app/test-2.db", hardLinkFile)
 	measureTime("cp", "/var/opt/tester/companies.db", "/app/test-3.db", copyFile)
 	measureTime("db.Query", "/app/test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
+
+	fmt.Println("⛳ end")
 }
 
 func measureTime(operation, src, dst string, fn func(string, string) error) {
