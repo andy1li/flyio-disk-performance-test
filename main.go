@@ -29,6 +29,8 @@ func main() {
 
 	measureTime("realSqlite", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", realSqlite)
 
+	measureTime("realSqlite again", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", realSqlite)
+
 	measureTime("db.Query explain", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQueryExplain)
 
 	// measureTime("db.Query (/var/opt/tester/companies.db)", "/var/opt/tester/companies.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
@@ -66,7 +68,7 @@ func symLinkFile(src, dst string) error {
 }
 
 func realSqlite(src, query string) error {
-	output, err := exec.Command("sqlite3", src, query).Output()
+	output, err := exec.Command("sqlite3", src, ".eqp full", query).Output()
 	if err != nil {
 		return err
 	}
