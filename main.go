@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -67,9 +68,25 @@ func dbQuery(src, query string) error {
 	}
 	defer db.Close()
 
-	expectedValues := []string{}
+	// Execute EXPLAIN QUERY PLAN
+	rows, err := db.Query("EXPLAIN QUERY PLAN " + query)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
 
-	rows, err := db.Query(query)
+	for rows.Next() {
+		var detail, from, to, estimatedRows string
+		err := rows.Scan(&detail, &from, &to, &estimatedRows)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("Detail: %s, From: %s, To: %s, Rows: %s\n",
+			detail, from, to, estimatedRows)
+	}
+
+	expectedValues := []string{}
+	rows, err = db.Query(query)
 	if err != nil {
 		return err
 	}
