@@ -30,6 +30,7 @@ func main() {
 
 	measureTime("cp", "/var/opt/tester/companies.db", "/app/test-3.db", copyFile)
 	measureTime("hardlink", "/var/opt/tester/companies.db", "/app/test-2.db", hardLinkFile)
+	measureTime("cp again", "/var/opt/tester/companies.db", "/app/test-3.db", copyFile)
 
 	fmt.Println("⛳ end")
 }
