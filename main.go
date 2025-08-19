@@ -25,7 +25,7 @@ func main() {
 	fmt.Print(string(output))
 
 	measureTime("symlink", "/var/opt/tester/companies.db", "/app/test-1.db", symLinkFile)
-	measureTime("db.Query (/var/opt/tester/companies.db)", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
+	measureTime("db.Query (/var/opt/tester/companies.db)", "/var/opt/tester/companies.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
 	measureTime("db.Query (/app/test-1.db)", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
 
 	measureTime("cp", "/var/opt/tester/companies.db", "/app/test-3.db", copyFile)
