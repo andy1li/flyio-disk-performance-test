@@ -15,5 +15,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 # Make the binary executable
 RUN chmod +x main
 
+RUN ls
+
 # Run the application
 CMD ["./main"]

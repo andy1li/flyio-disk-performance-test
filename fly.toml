@@ -11,4 +11,3 @@ primary_region = 'iad'
 [[vm]]
   size = 'performance-2x'
   count = 1
-
