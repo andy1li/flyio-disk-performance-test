@@ -2,14 +2,14 @@ FROM golang:1.23-alpine
 
 WORKDIR /app
 
-RUN git lfs pull
-
 # Copy source code and database
 RUN mkdir -p /var/opt/tester
 COPY companies.db /var/opt/tester
 COPY go.mod /app/go.mod
 COPY go.sum /app/go.sum
 COPY main.go /app/main.go
+
+RUN git lfs pull
 
 # Build the application inside the container
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
