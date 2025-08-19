@@ -12,14 +12,14 @@ import (
 )
 
 func main() {
-	os.RemoveAll("/tmp/test-1.db")
-	os.RemoveAll("/tmp/test-2.db")
-	os.RemoveAll("/tmp/test-3.db")
+	os.RemoveAll("/app/test-1.db")
+	os.RemoveAll("/app/test-2.db")
+	os.RemoveAll("/app/test-3.db")
 
-	measureTime("symlink", "/var/opt/tester/companies.db", "/tmp/test-1.db", symLinkFile)
-	measureTime("hardlink", "/var/opt/tester/companies.db", "/tmp/test-2.db", hardLinkFile)
-	measureTime("cp", "/var/opt/tester/companies.db", "/tmp/test-3.db", copyFile)
-	measureTime("db.Query", "/var/opt/tester/companies.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
+	measureTime("symlink", "/var/opt/tester/companies.db", "/app/test-1.db", symLinkFile)
+	measureTime("hardlink", "/var/opt/tester/companies.db", "/app/test-2.db", hardLinkFile)
+	measureTime("cp", "/var/opt/tester/companies.db", "/app/test-3.db", copyFile)
+	measureTime("db.Query", "/app/test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
 }
 
 func measureTime(operation, src, dst string, fn func(string, string) error) {
