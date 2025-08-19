@@ -2,6 +2,8 @@ FROM golang:1.23-alpine
 
 WORKDIR /app
 
+RUN git lfs pull
+
 # Copy source code and database
 RUN mkdir -p /var/opt/tester
 COPY companies.db /var/opt/tester
