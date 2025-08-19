@@ -1,6 +1,6 @@
 FROM golang:1.23-alpine
 
-RUN apk add --no-cache git git-lfs
+RUN apk add --no-cache git git-lfs sqlite
 
 WORKDIR /var/opt/tester
 COPY . /var/opt/tester

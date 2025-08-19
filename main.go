@@ -26,8 +26,13 @@ func main() {
 	fmt.Print(string(output))
 
 	measureTime("symlink", "/var/opt/tester/companies.db", "/app/test-1.db", symLinkFile)
-	measureTime("db.Query (/var/opt/tester/companies.db)", "/var/opt/tester/companies.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
-	measureTime("db.Query (/app/test-1.db)", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
+
+	measureTime("realSqlite", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", realSqlite)
+
+	measureTime("db.Query (/app/test-1.db)", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQueryExplain)
+
+	// measureTime("db.Query (/var/opt/tester/companies.db)", "/var/opt/tester/companies.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
+	// measureTime("db.Query (/app/test-1.db)", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
 
 	measureTime("cp", "/var/opt/tester/companies.db", "/app/test-3.db", copyFile)
 	measureTime("hardlink", "/var/opt/tester/companies.db", "/app/test-2.db", hardLinkFile)
@@ -38,12 +43,12 @@ func main() {
 
 func measureTime(operation, src, dst string, fn func(string, string) error) {
 	start := time.Now()
-	fmt.Printf("Starting %s\n", operation)
+	fmt.Printf("⛳ Starting %s\n", operation)
 
 	if err := fn(src, dst); err != nil {
 		fmt.Printf("- %s failed: %v\n", operation, err)
 	} else {
-		fmt.Printf("- %v for %s\n", time.Since(start), operation)
+		fmt.Printf("⏰ %v for %s\n", time.Since(start), operation)
 	}
 }
 
@@ -60,7 +65,16 @@ func symLinkFile(src, dst string) error {
 	return os.Symlink(src, dst)
 }
 
-func dbQuery(src, query string) error {
+func realSqlite(src, query string) error {
+	output, err := exec.Command("sqlite3", src, query).Output()
+	if err != nil {
+		return err
+	}
+	fmt.Println(string(output))
+	return nil
+}
+
+func dbQueryExplain(src, query string) error {
 	db, err := sql.Open("sqlite", src)
 	if err != nil {
 		fmt.Printf("Failed to create test database, this is a CodeCrafters error.")
@@ -69,6 +83,32 @@ func dbQuery(src, query string) error {
 	defer db.Close()
 
 	// Execute EXPLAIN QUERY PLAN
+	rows, err := db.Query("EXPLAIN QUERY PLAN " + query)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var detail, from, to, estimatedRows string
+		err := rows.Scan(&detail, &from, &to, &estimatedRows)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("💭 EXPLAIN QUERY PLAN: Detail: %s, From: %s, To: %s, Rows: %s\n",
+			detail, from, to, estimatedRows)
+	}
+	return nil
+}
+
+func dbQuery(src, query string) error {
+	db, err := sql.Open("sqlite", src)
+	if err != nil {
+		fmt.Printf("Failed to create test database, this is a CodeCrafters error.")
+		return err
+	}
+	defer db.Close()
+
 	rows, err := db.Query("EXPLAIN QUERY PLAN " + query)
 	if err != nil {
 		log.Fatal(err)
