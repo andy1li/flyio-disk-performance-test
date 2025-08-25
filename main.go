@@ -28,7 +28,7 @@ func main() {
 
 	measureTime("symlink", "/var/opt/tester/companies.db", "/app/test-1.db", symLinkFile)
 
-	file, err := os.Open("/app/test-1.db")
+	file, err := os.OpenFile("/app/test-1.db", os.O_RDWR, 0644)
 	if err != nil {
 		fmt.Printf("Failed to open database: %v\n", err)
 		return
