@@ -10,7 +10,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 RUN chmod +x main
 
 WORKDIR /app
-CMD ["strace", "/var/opt/tester/main"]
+CMD ["/var/opt/tester/main"]
 
 # CMD ["/var/opt/tester/main"]
 
