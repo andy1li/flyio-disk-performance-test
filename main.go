@@ -28,14 +28,14 @@ func main() {
 
 	measureTime("symlink", "/var/opt/tester/companies.db", "/app/test-1.db", symLinkFile)
 
-	file, err := os.OpenFile("/app/test-1.db", os.O_RDWR, 0644)
-	if err != nil {
-		fmt.Printf("Failed to open database: %v\n", err)
-		return
-	}
-	defer file.Close()
+	// file, err := os.OpenFile("/app/test-1.db", os.O_RDWR, 0644)
+	// if err != nil {
+	// 	fmt.Printf("Failed to open database: %v\n", err)
+	// 	return
+	// }
+	// defer file.Close()
 
-	measureTimeForReadPage(file, 0)
+	// measureTimeForReadPage(file, 0)
 
 	// i := 128
 	// for i < 252249 {
@@ -49,7 +49,8 @@ func main() {
 	// // measureTime("realSqlite", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", realSqlite)
 	// // measureTime("realSqlite again", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", realSqlite)
 
-	// measureTime("db.Query limit 1", "./test-1.db", "SELECT id, name FROM companies LIMIT 1", dbQueryExplain)
+	measureTime("db.Query limit 1", "file:./test-1.db?mode=ro", "SELECT id, name FROM companies LIMIT 1", dbQuery)
+	measureTime("db.Query index", "file:./test-1.db?mode=ro", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
 	// measureTime("db.Query explain", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQueryExplain)
 	// // measureTime("db.Query (/var/opt/tester/companies.db)", "/var/opt/tester/companies.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
 	// measureTime("db.Query (./test-1.db)", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
