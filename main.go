@@ -35,14 +35,14 @@ func main() {
 	}
 	defer file.Close()
 
-	i := 1
-	for i < 252249 {
-		start := time.Now()
+	for i := 0; i < 128; i++ {
+		measureTimeForReadPage(file, i)
+	}
 
-		if err := readPage(file, i); err != nil {
-			fmt.Printf("❌ readPage %d failed: %v\n", i, err)
-		} else {
-			fmt.Printf("⏰ %v for reading page %d\n", time.Since(start), i)
+	i := 128
+	for i < 252249 {
+		for j := 0; j < 128; j++ {
+			measureTimeForReadPage(file, i+j)
 		}
 		i *= 2
 	}
@@ -70,6 +70,18 @@ func measureTime(operation, src, dst string, fn func(string, string) error) {
 	} else {
 		fmt.Printf("⏰ %v for %s\n", time.Since(start), operation)
 	}
+}
+
+func measureTimeForReadPage(file *os.File, pageNumber int) error {
+	start := time.Now()
+
+	if err := readPage(file, pageNumber); err != nil {
+		fmt.Printf("❌ readPage %d failed: %v\n", pageNumber, err)
+	} else {
+		fmt.Printf("⏰ %v for reading page %d\n", time.Since(start), pageNumber)
+	}
+
+	return nil
 }
 
 func copyFile(src, dst string) error {
