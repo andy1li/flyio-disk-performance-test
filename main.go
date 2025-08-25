@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"os/exec"
@@ -27,6 +28,15 @@ func main() {
 
 	measureTime("symlink", "/var/opt/tester/companies.db", "/app/test-1.db", symLinkFile)
 
+	file, err := os.Open("/app/test-1.db")
+	if err != nil {
+		fmt.Printf("Failed to open database: %v\n", err)
+		return
+	}
+	defer file.Close()
+
+	measureTimeForReadPage(file, 0)
+
 	// i := 128
 	// for i < 252249 {
 	// 	for j := 0; j < 128; j++ {
@@ -35,21 +45,21 @@ func main() {
 	// 	i *= 2
 	// }
 
-	measureTime("realSqlite limit 1", "./test-1.db", "SELECT id, name FROM companies LIMIT 1", realSqlite)
-	// measureTime("realSqlite", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", realSqlite)
-	// measureTime("realSqlite again", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", realSqlite)
+	// measureTime("realSqlite limit 1", "./test-1.db", "SELECT id, name FROM companies LIMIT 1", realSqlite)
+	// // measureTime("realSqlite", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", realSqlite)
+	// // measureTime("realSqlite again", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", realSqlite)
 
-	measureTime("db.Query limit 1", "./test-1.db", "SELECT id, name FROM companies LIMIT 1", dbQueryExplain)
-	measureTime("db.Query explain", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQueryExplain)
-	// measureTime("db.Query (/var/opt/tester/companies.db)", "/var/opt/tester/companies.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
-	measureTime("db.Query (./test-1.db)", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
-	// measureTime("db.Query (./companies.db)", "./companies.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
+	// measureTime("db.Query limit 1", "./test-1.db", "SELECT id, name FROM companies LIMIT 1", dbQueryExplain)
+	// measureTime("db.Query explain", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQueryExplain)
+	// // measureTime("db.Query (/var/opt/tester/companies.db)", "/var/opt/tester/companies.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
+	// measureTime("db.Query (./test-1.db)", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
+	// // measureTime("db.Query (./companies.db)", "./companies.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
 
-	// measureTime("cp", "/var/opt/tester/companies.db", "/app/test-3.db", copyFile)
-	measureTime("hardlink", "/var/opt/tester/companies.db", "/app/test-2.db", hardLinkFile)
-	measureTime("cp again", "/var/opt/tester/companies.db", "/app/test-3.db", copyFile)
+	// // measureTime("cp", "/var/opt/tester/companies.db", "/app/test-3.db", copyFile)
+	// measureTime("hardlink", "/var/opt/tester/companies.db", "/app/test-2.db", hardLinkFile)
+	// measureTime("cp again", "/var/opt/tester/companies.db", "/app/test-3.db", copyFile)
 
-	fmt.Println("⛳ end")
+	// fmt.Println("⛳ end")
 }
 
 func measureTime(operation, src, dst string, fn func(string, string) error) {
@@ -63,17 +73,17 @@ func measureTime(operation, src, dst string, fn func(string, string) error) {
 	}
 }
 
-// func measureTimeForReadPage(file *os.File, pageNumber int) error {
-// 	start := time.Now()
+func measureTimeForReadPage(file *os.File, pageNumber int) error {
+	start := time.Now()
 
-// 	if err := readPage(file, pageNumber); err != nil {
-// 		fmt.Printf("❌ readPage %d failed: %v\n", pageNumber, err)
-// 	} else {
-// 		fmt.Printf("⏰ %v for reading 📄 %d\n", time.Since(start), pageNumber)
-// 	}
+	if err := readPage(file, pageNumber); err != nil {
+		fmt.Printf("❌ readPage %d failed: %v\n", pageNumber, err)
+	} else {
+		fmt.Printf("⏰ %v for reading 📄 %d\n", time.Since(start), pageNumber)
+	}
 
-// 	return nil
-// }
+	return nil
+}
 
 func copyFile(src, dst string) error {
 	cmd := exec.Command("cp", src, dst)
@@ -159,23 +169,23 @@ func hardLinkFile(src, dst string) error {
 	return os.Link(src, dst)
 }
 
-// func readPage(file *os.File, pageNumber int) error {
-// 	offset := int64(pageNumber * 4096)
+func readPage(file *os.File, pageNumber int) error {
+	offset := int64(pageNumber * 4096)
 
-// 	_, err := file.Seek(offset, 0) // 0 = seek from beginning
-// 	if err != nil {
-// 		return fmt.Errorf("failed to seek to page %d: %v", pageNumber, err)
-// 	}
+	_, err := file.Seek(offset, 0) // 0 = seek from beginning
+	if err != nil {
+		return fmt.Errorf("failed to seek to page %d: %v", pageNumber, err)
+	}
 
-// 	buffer := make([]byte, 4096*4096)
-// 	bytesRead, err := io.ReadFull(file, buffer)
-// 	if err != nil {
-// 		return fmt.Errorf("failed to read page %d: %v", pageNumber, err)
-// 	}
+	buffer := make([]byte, 4096)
+	bytesRead, err := io.ReadFull(file, buffer)
+	if err != nil {
+		return fmt.Errorf("failed to read page %d: %v", pageNumber, err)
+	}
 
-// 	fmt.Printf("📄 %d: read %d bytes. First 16 bytes: %x\n", pageNumber, bytesRead, buffer[:16])
-// 	return nil
-// }
+	fmt.Printf("📄 %d: read %d bytes. First 16 bytes: %x\n", pageNumber, bytesRead, buffer[:16])
+	return nil
+}
 
 func realSqlite(src, query string) error {
 	output, err := exec.Command("sqlite3", src, ".eqp full", query).Output()
