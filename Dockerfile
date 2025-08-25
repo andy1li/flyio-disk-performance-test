@@ -1,6 +1,6 @@
 FROM golang:1.23-alpine
 
-RUN apk add --no-cache git git-lfs sqlite
+RUN apk add --no-cache git git-lfs sqlite strace
 
 WORKDIR /var/opt/tester
 COPY . /var/opt/tester
@@ -11,5 +11,8 @@ RUN chmod +x main
 
 WORKDIR /app
 # CMD ["/var/opt/tester/main"]
-RUN rm "/app/test-1.db"
+
+RUN rm -f "/app/test-1.db" || true
 CMD ["strace", "ln", "/var/opt/tester/companies.db", "/app/test-1.db"]
+
+# CMD ["strace", "sqlite3", "/app/test-1.db", ".eqp full", "SELECT id, name FROM companies LIMIT 1"]
