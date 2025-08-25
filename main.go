@@ -78,7 +78,7 @@ func measureTimeForReadPage(file *os.File, pageNumber int) error {
 	if err := readPage(file, pageNumber); err != nil {
 		fmt.Printf("❌ readPage %d failed: %v\n", pageNumber, err)
 	} else {
-		fmt.Printf("⏰ %v for reading page %d\n", time.Since(start), pageNumber)
+		fmt.Printf("⏰ %v for reading 📄 %d\n", time.Since(start), pageNumber)
 	}
 
 	return nil
@@ -181,7 +181,7 @@ func readPage(file *os.File, pageNumber int) error {
 		return fmt.Errorf("failed to read page %d: %v", pageNumber, err)
 	}
 
-	fmt.Printf("⛳ Page %d: read %d bytes. First 16 bytes: %x\n", pageNumber, bytesRead, buffer[:16])
+	fmt.Printf("📄 %d: read %d bytes. First 16 bytes: %x\n", pageNumber, bytesRead, buffer[:16])
 	return nil
 }
 
