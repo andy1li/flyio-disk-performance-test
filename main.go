@@ -35,10 +35,10 @@ func main() {
 	// 	i *= 2
 	// }
 
+	measureTime("realSqlite limit 1", "./test-1.db", "SELECT id, name FROM companies LIMIT 1", realSqlite)
 	// measureTime("realSqlite", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", realSqlite)
 	// measureTime("realSqlite again", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", realSqlite)
 
-	measureTime("realSqlite limit 1", "./test-1.db", "SELECT id, name FROM companies LIMIT 1", realSqlite)
 	measureTime("db.Query limit 1", "./test-1.db", "SELECT id, name FROM companies LIMIT 1", dbQueryExplain)
 	measureTime("db.Query explain", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQueryExplain)
 	// measureTime("db.Query (/var/opt/tester/companies.db)", "/var/opt/tester/companies.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
