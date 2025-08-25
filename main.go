@@ -62,17 +62,17 @@ func measureTime(operation, src, dst string, fn func(string, string) error) {
 	}
 }
 
-func measureTimeForReadPage(file *os.File, pageNumber int) error {
-	start := time.Now()
+// func measureTimeForReadPage(file *os.File, pageNumber int) error {
+// 	start := time.Now()
 
-	if err := readPage(file, pageNumber); err != nil {
-		fmt.Printf("❌ readPage %d failed: %v\n", pageNumber, err)
-	} else {
-		fmt.Printf("⏰ %v for reading 📄 %d\n", time.Since(start), pageNumber)
-	}
+// 	if err := readPage(file, pageNumber); err != nil {
+// 		fmt.Printf("❌ readPage %d failed: %v\n", pageNumber, err)
+// 	} else {
+// 		fmt.Printf("⏰ %v for reading 📄 %d\n", time.Since(start), pageNumber)
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
 func copyFile(src, dst string) error {
 	cmd := exec.Command("cp", src, dst)
