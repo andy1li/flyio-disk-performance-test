@@ -13,6 +13,6 @@ WORKDIR /app
 # CMD ["/var/opt/tester/main"]
 
 RUN rm -f "/app/test-1.db" || true
-CMD ["strace", "ln", "/var/opt/tester/companies.db", "/app/test-1.db"]
+# CMD ["strace", "ln", "/var/opt/tester/companies.db", "/app/test-1.db"]
 
-# CMD ["strace", "sqlite3", "/app/test-1.db", ".eqp full", "SELECT id, name FROM companies LIMIT 1"]
+CMD ["strace", "sqlite3", "/app/test-1.db", ".eqp full", "SELECT id, name FROM companies LIMIT 1"]
