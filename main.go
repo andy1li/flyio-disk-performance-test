@@ -168,7 +168,7 @@ func hardLinkFile(src, dst string) error {
 }
 
 func readPage(file *os.File, pageNumber int) error {
-	offset := int64(pageNumber * 4096 * 16)
+	offset := int64(pageNumber * 4096)
 
 	_, err := file.Seek(offset, 0) // 0 = seek from beginning
 	if err != nil {
