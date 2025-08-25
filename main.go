@@ -35,7 +35,7 @@ func main() {
 	}
 	defer file.Close()
 
-	for i := 0; i < 252249; i++ {
+	for i := 0; i < 252249; i += 16 {
 		measureTimeForReadPage(file, i)
 	}
 
@@ -168,14 +168,14 @@ func hardLinkFile(src, dst string) error {
 }
 
 func readPage(file *os.File, pageNumber int) error {
-	offset := int64(pageNumber * 4096)
+	offset := int64(pageNumber * 4096 * 16)
 
 	_, err := file.Seek(offset, 0) // 0 = seek from beginning
 	if err != nil {
 		return fmt.Errorf("failed to seek to page %d: %v", pageNumber, err)
 	}
 
-	buffer := make([]byte, 4096)
+	buffer := make([]byte, 4096*16)
 	bytesRead, err := io.ReadFull(file, buffer)
 	if err != nil {
 		return fmt.Errorf("failed to read page %d: %v", pageNumber, err)
