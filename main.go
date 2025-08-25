@@ -9,8 +9,7 @@ import (
 	"strings"
 	"time"
 
-	_ "github.com/ncruces/go-sqlite3/driver"
-	_ "github.com/ncruces/go-sqlite3/embed"
+	_ "github.com/glebarez/go-sqlite"
 )
 
 func main() {
@@ -80,7 +79,7 @@ func copyFile(src, dst string) error {
 }
 
 func dbQuery(src, query string) error {
-	db, err := sql.Open("sqlite3", src)
+	db, err := sql.Open("sqlite", src)
 	if err != nil {
 		fmt.Printf("Failed to create test database, this is a CodeCrafters error.")
 		return err
@@ -127,7 +126,7 @@ func dbQuery(src, query string) error {
 }
 
 func dbQueryExplain(src, query string) error {
-	db, err := sql.Open("sqlite3", src)
+	db, err := sql.Open("sqlite", src)
 	if err != nil {
 		fmt.Printf("Failed to create test database, this is a CodeCrafters error.")
 		return err
