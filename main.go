@@ -35,7 +35,7 @@ func main() {
 	}
 	defer file.Close()
 
-	for i := 0; i < 252249; i += 1024 {
+	for i := 0; i < 252249; i += 4096 {
 		measureTimeForReadPage(file, i)
 	}
 
@@ -175,7 +175,7 @@ func readPage(file *os.File, pageNumber int) error {
 		return fmt.Errorf("failed to seek to page %d: %v", pageNumber, err)
 	}
 
-	buffer := make([]byte, 4096*1024)
+	buffer := make([]byte, 4096*4096)
 	bytesRead, err := io.ReadFull(file, buffer)
 	if err != nil {
 		return fmt.Errorf("failed to read page %d: %v", pageNumber, err)
