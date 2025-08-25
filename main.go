@@ -35,17 +35,17 @@ func main() {
 	}
 	defer file.Close()
 
-	for i := 0; i < 128; i++ {
+	for i := 0; i < 252249; i++ {
 		measureTimeForReadPage(file, i)
 	}
 
-	i := 128
-	for i < 252249 {
-		for j := 0; j < 128; j++ {
-			measureTimeForReadPage(file, i+j)
-		}
-		i *= 2
-	}
+	// i := 128
+	// for i < 252249 {
+	// 	for j := 0; j < 128; j++ {
+	// 		measureTimeForReadPage(file, i+j)
+	// 	}
+	// 	i *= 2
+	// }
 
 	// measureTime("realSqlite", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", realSqlite)
 	// measureTime("realSqlite again", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", realSqlite)
