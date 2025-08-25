@@ -81,6 +81,7 @@ func copyFile(src, dst string) error {
 
 func dbQuery(src, query string) error {
 	db, err := sql.Open("sqlite", src)
+	fmt.Println("🔰 just called sql.Open", src, query)
 	if err != nil {
 		fmt.Printf("Failed to create test database, this is a CodeCrafters error.")
 		return err
