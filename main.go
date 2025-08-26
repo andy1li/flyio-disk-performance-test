@@ -105,6 +105,8 @@ func dbQuery(src, query string) error {
 
 	if err := db.PingContext(ctx); err != nil {
 		panic(fmt.Sprintf("❌ CodeCrafters internal error: The tester failed to open the test database within %v", timeout))
+	} else {
+		fmt.Println("✅ after db.PingContext")
 	}
 
 	if err != nil {
@@ -113,9 +115,9 @@ func dbQuery(src, query string) error {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("EXPLAIN QUERY PLAN " + query)
+	rows, err := db.QueryContext(ctx, query)
 	if err != nil {
-		log.Fatal(err)
+		panic(fmt.Sprintf("❌ CodeCrafters internal error: The tester failed to open the test database within %v", timeout))
 	}
 	defer rows.Close()
 
