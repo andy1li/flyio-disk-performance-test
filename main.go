@@ -103,10 +103,10 @@ func dbQuery(src, query string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	if err := db.PingContext(ctx); err != nil {
-		panic(fmt.Sprintf("❌ CodeCrafters internal error: The tester failed to open the test database within %v", timeout))
-	}
-	fmt.Println("✅ after db.PingContext")
+	// if err := db.PingContext(ctx); err != nil {
+	// 	panic(fmt.Sprintf("❌ CodeCrafters internal error: The tester failed to open the test database within %v", timeout))
+	// }
+	// fmt.Println("✅ after db.PingContext")
 
 	rows, err := db.QueryContext(ctx, query)
 	if err != nil {
