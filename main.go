@@ -1,14 +1,12 @@
 package main
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 	"io"
 	"log"
 	"os"
 	"os/exec"
-	"strings"
 	"time"
 
 	_ "github.com/glebarez/go-sqlite"
@@ -27,7 +25,7 @@ func main() {
 	// output, _ = exec.Command("head", "/var/opt/tester/companies.db").Output()
 	// fmt.Print(string(output))
 
-	measureTime("symlink", "/var/opt/tester/companies.db", "/app/test-1.db", symLinkFile)
+	// measureTime("symlink", "/var/opt/tester/companies.db", "/app/test-1.db", symLinkFile)
 
 	// file, err := os.OpenFile("/app/test-1.db", os.O_RDWR, 0644)
 	// if err != nil {
@@ -50,8 +48,18 @@ func main() {
 	// // measureTime("realSqlite", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", realSqlite)
 	// // measureTime("realSqlite again", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", realSqlite)
 
-	measureTime("db.Query limit 1", "./test-1.db", "SELECT id, name FROM companies LIMIT 1", dbQuery)
-	measureTime("db.Query index", "/test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
+	queryResultChannel := make(chan error, 1)
+	go func() {
+		queryResultChannel <- dbQuery("companies.db", "SELECT id, name FROM companies LIMIT 1")
+	}()
+
+	select {
+	case err := <-queryResultChannel:
+		fmt.Println("✅ queryResultChannel", err)
+	case <-time.After(1 * time.Second):
+		panic(fmt.Sprintf("❌ timed out, test exceeded %d seconds", int64(1*time.Second)))
+	}
+
 	// measureTime("db.Query explain", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQueryExplain)
 	// // measureTime("db.Query (/var/opt/tester/companies.db)", "/var/opt/tester/companies.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
 	// measureTime("db.Query (./test-1.db)", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
@@ -96,49 +104,17 @@ func dbQuery(src, query string) error {
 	fmt.Println("⛳ before sql.Open")
 
 	db, err := sql.Open("sqlite", src)
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("⛳ after sql.Open")
 
-	timeout := 1 * time.Second
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
-	rows, err := db.QueryContext(ctx, query)
-	if err != nil {
-		fmt.Println("⏰", time.Now())
-		panic(fmt.Sprintf("❌ CodeCrafters internal error: The tester failed to open the test database within %v", timeout))
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var detail, from, to, estimatedRows string
-		err := rows.Scan(&detail, &from, &to, &estimatedRows)
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Printf("Detail: %s, From: %s, To: %s, Rows: %s\n",
-			detail, from, to, estimatedRows)
-	}
-
-	expectedValues := []string{}
-	rows, err = db.Query(query)
+	rows, err := db.Query(query)
 	if err != nil {
 		return err
 	}
 	defer rows.Close()
-
-	for rows.Next() {
-		var value1 string
-		var value2 string
-
-		if err := rows.Scan(&value1, &value2); err != nil {
-			return err
-		}
-
-		expectedValues = append(expectedValues, strings.Join([]string{value1, value2}, "|"))
-	}
-
-	fmt.Println(expectedValues)
 
 	return nil
 }
