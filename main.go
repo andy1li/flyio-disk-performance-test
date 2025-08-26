@@ -110,6 +110,7 @@ func dbQuery(src, query string) error {
 
 	rows, err := db.QueryContext(ctx, query)
 	if err != nil {
+		fmt.Println(time.Now())
 		panic(fmt.Sprintf("❌ CodeCrafters internal error: The tester failed to open the test database within %v", timeout))
 	}
 	defer rows.Close()
