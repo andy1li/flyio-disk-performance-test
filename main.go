@@ -25,7 +25,7 @@ func main() {
 	// output, _ = exec.Command("head", "/var/opt/tester/companies.db").Output()
 	// fmt.Print(string(output))
 
-	// measureTime("symlink", "/var/opt/tester/companies.db", "/app/test-1.db", symLinkFile)
+	measureTime("symlink", "/var/opt/tester/companies.db", "/app/test-1.db", symLinkFile)
 
 	// file, err := os.OpenFile("/app/test-1.db", os.O_RDWR, 0644)
 	// if err != nil {
@@ -50,7 +50,7 @@ func main() {
 
 	queryResultChannel := make(chan error, 1)
 	go func() {
-		queryResultChannel <- dbQuery("companies.db", "SELECT id, name FROM companies LIMIT 1")
+		queryResultChannel <- dbQuery("./test-1.db", "SELECT id, name FROM companies LIMIT 1")
 	}()
 
 	select {
