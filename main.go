@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"io"
@@ -49,8 +50,8 @@ func main() {
 	// // measureTime("realSqlite", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", realSqlite)
 	// // measureTime("realSqlite again", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", realSqlite)
 
-	measureTime("db.Query limit 1", "file:./test-1.db?mode=ro", "SELECT id, name FROM companies LIMIT 1", dbQuery)
-	measureTime("db.Query index", "file:./test-1.db?mode=ro", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
+	measureTime("db.Query limit 1", "./test-1.db", "SELECT id, name FROM companies LIMIT 1", dbQuery)
+	measureTime("db.Query index", "/test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
 	// measureTime("db.Query explain", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQueryExplain)
 	// // measureTime("db.Query (/var/opt/tester/companies.db)", "/var/opt/tester/companies.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
 	// measureTime("db.Query (./test-1.db)", "./test-1.db", "SELECT id, name FROM companies WHERE country = 'micronesia'", dbQuery)
@@ -92,8 +93,20 @@ func copyFile(src, dst string) error {
 }
 
 func dbQuery(src, query string) error {
+	fmt.Println("⛳ before sql.Open")
+
 	db, err := sql.Open("sqlite", src)
-	fmt.Println("🔰 just called sql.Open", src, query)
+
+	fmt.Println("⛳ after sql.Open")
+
+	timeout := 1 * time.Second
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	if err := db.PingContext(ctx); err != nil {
+		panic(fmt.Sprintf("❌ CodeCrafters internal error: The tester failed to open the test database within %v", timeout))
+	}
+
 	if err != nil {
 		fmt.Printf("Failed to create test database, this is a CodeCrafters error.")
 		return err
